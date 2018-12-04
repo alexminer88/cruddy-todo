@@ -8,43 +8,25 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  counter.getNextUniqueId((err, id)=>{
-    if (err) {
-      throw ('error at file create');
-    } else {
-      
-      // items[id] = text;
-      var pathName = `/Users/student/hrsf108-cruddy-todo/test/testData/${id}.txt`;
-      // console.log('current pathname', pathName);
-      //we will have to come back and fix this pathname
-      fs.writeFile(pathName, text, (err) => {
+  counter.getNextUniqueId((err, id)=> {
+    var filePath = path.join(exports.dataDir, `${id}.txt`);
+    fs.writeFile(filePath, text, (err) => {
+      if (err) {
+        throw ('error at file create');
+      } else {
         callback(null, {id: id, text: text});
-      });   
-    }
+      }   
+    });
   });
 };
 
-exports.readAll = (callback) => {
-  /* 
-  Pseudocode:
-    init a local data array to hold data from server
-    get data from fs.readDir(path, cb)
-      if err, error out
-      on success for each item in fs.readDir, 
-        push that data {id: id, text: text}, into local data array
-    call callback(err, data array)
-  */
-        
-  /*
+exports.readAll = (callback) => {   
   var storage = [];
   var count = 0;
   fs.readdir(exports.dataDir, (err, data) => {
     if (err) {
       throw ('readAll error');
     } else {
-      // storage = data.map(dataElement => {
-      //   return {id: id, text: text}
-      // });
       if (data.length === 0) {
         callback(null, storage);
       }
@@ -56,44 +38,25 @@ exports.readAll = (callback) => {
           } else {
             storage.push({id: file.slice(0, -4), text: innerData});
             count++;
-            
-            if (count === data.length){
-              callback(null, storage); 
+            if (count === data.length) {
+              callback(null, storage);    
             }
           } 
         });        
       });
-      console.log('storage', storage);
-      // console.log(data);
-     // var dataFiles = data.map(element => {
-     //   return 
-     // }); 
     }
-  });  
-  */
-  
-  var data = [];
-  fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      throw ('error reading files');
-    } else {
-      files.forEach(function(fileName) {
-        data.push({id: fileName.substr(0, 5), text: fileName.substr(0, 5)});
-      })
-      callback(null, data);
-    }
-  });
+  }); 
 };
 
 exports.readOne = (id, callback) => {
   var filePath = path.join(exports.dataDir, `${id}.txt`);
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, {id: id, text: data});
-      }
-    });
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      callback(err);
+    } else {
+      callback(null, {id: id, text: data});
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
@@ -111,7 +74,6 @@ exports.update = (id, text, callback) => {
       });   
     }
   });
-
 };
 
 exports.delete = (id, callback) => {
@@ -122,18 +84,8 @@ exports.delete = (id, callback) => {
       callback(err);
     } else {
       callback();
-    }
-    
+    }  
   });
-  
-//   var item = items[id];
-//   delete items[id];
-//   if (!item) {
-//     // report an error if item not found
-//     callback(new Error(`No item with id: ${id}`));
-//   } else {
-//     callback();
-//   }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
