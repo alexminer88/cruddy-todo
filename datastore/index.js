@@ -8,9 +8,21 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  counter.getNextUniqueId((err, id)=>{
+    if (err) {
+      throw ('error at file create');
+    } else {
+      
+      items[id] = text;
+      var pathName = `/Users/student/hrsf108-cruddy-todo/test/testData/${id}.txt`;
+      // console.log('current pathname', pathName);
+      //we will have to come back and fix this pathname
+      fs.writeFile(pathName, text, (err) => {
+        callback(null, {id: id, text: text});
+      });   
+    }
+  });
+
 };
 
 exports.readAll = (callback) => {
